@@ -24,13 +24,13 @@ class Queue {
     }
 
     add(task, index) {
+        this.lengthQueue.push(task);
+        console.log(this.lengthQueue); 
         const hasChannel = this.countSizeConcurrency < this.concurrency;
         if (hasChannel) {
-            this.#execute(task,index);
+            this.#execute(task, index);
             return;
         }
-        this.lengthQueue.push(task);
-        console.log(this.lengthQueue);  
         
     }
     
@@ -39,18 +39,21 @@ class Queue {
         console.log(task(index));
         this.countSizeConcurrency++;
         console.log(this.countSizeConcurrency);
-                         
-        // this.#then(index)
+        this.lengthQueue.shift();                 
+        // this.#then(index) был вариант использование then внутри через приатное свойство
          
         console.log(this.lengthQueue);
-        
     }
 
-    #then(result) {
+    then(result, index) {
         console.log(`Успешно завершен промис ${result}`)
         this.countSizeConcurrency--;
         console.log(this.countSizeConcurrency);
-        if (this.countSizeConcurrency === 0&&this.lengthQueue.length===0) {
+        // if (this.lengthQueue.length > 0) {
+        //     const newTask = this.lengthQueue.shift(); 
+        //     this.#execute(newTask, index);
+        // }
+        if (this.lengthQueue.length===0) {
             console.log('очередь опустошена')
         }
         
@@ -61,8 +64,9 @@ const queue = new Queue();
     
 for (let i = 1; i <= 100; i++){
     queue.add(payload, i);
-        
+    queue.then(i,i)    
 }
+
 
 
 
