@@ -3,7 +3,7 @@ function payload(index) {
         setTimeout(() => {
             const isSuccess = true;
             if (isSuccess) {
-                resolve(`промис ${index}`);
+                resolve(console.log(`промис ${index}`));
             }
             
         }, rand(100, 1000));
@@ -25,20 +25,21 @@ class Queue {
 
     add(task, index) {
         this.lengthQueue.push(task);
-        console.log(this.lengthQueue); 
-        const hasChannel = this.countSizeConcurrency < this.concurrency;
-        if (hasChannel) {
-            this.#execute(task, index);
-            return;
-        }
+        console.log(this.lengthQueue);
         
-    }
+        this.#execute(task, index);
+    }    
     
     #execute(task, index) {
+        const hasChannel = this.countSizeConcurrency < this.concurrency;
+        if (!hasChannel) {
+            return;
+        }
         task(index);
         console.log(task(index));
         this.countSizeConcurrency++;
         console.log(this.countSizeConcurrency);
+              
         this.lengthQueue.shift();                 
         // this.#then(index) был вариант использование then внутри через приатное свойство
          
@@ -49,10 +50,10 @@ class Queue {
         console.log(`Успешно завершен промис ${result}`)
         this.countSizeConcurrency--;
         console.log(this.countSizeConcurrency);
-        // if (this.lengthQueue.length > 0) {
-        //     const newTask = this.lengthQueue.shift(); 
-        //     this.#execute(newTask, index);
-        // }
+        if (this.lengthQueue.length > 0) {
+            const newTask = this.lengthQueue.shift(); 
+            this.#execute(newTask, index);
+        }
         if (this.lengthQueue.length===0) {
             console.log('очередь опустошена')
         }
@@ -64,7 +65,7 @@ const queue = new Queue();
     
 for (let i = 1; i <= 100; i++){
     queue.add(payload, i);
-    queue.then(i,i)    
+    // queue.then(i,i)    
 }
 
 
