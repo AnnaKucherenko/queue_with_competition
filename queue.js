@@ -40,7 +40,7 @@ class Queue {
         this.countSizeConcurrency++;
         console.log(this.countSizeConcurrency);
                          
-        this.#then(index)
+        // this.#then(index)
          
         console.log(this.lengthQueue);
         
