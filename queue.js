@@ -20,7 +20,6 @@ class Queue {
         this.concurrency = 20;
         this.countSizeConcurrency = 0;
         this.lengthQueue = [];
-                
     }
 
     add(task, index) {
@@ -30,32 +29,37 @@ class Queue {
         this.#execute();
     }    
     
-    #execute() {
+    async #execute() {
         const hasChannel = this.countSizeConcurrency < this.concurrency;
         if (!hasChannel) {
             return;
         }
+                
+        if (this.lengthQueue.length === 0) {
+            return;       
+        }
+
+        const newTask = this.lengthQueue.shift();
+        console.log(this.lengthQueue);
         this.countSizeConcurrency++;
         console.log(this.countSizeConcurrency);
-        const newTask = this.lengthQueue.shift();
         const index = newTask[1];
-        payload(index);
-                      
+        await payload(index);
+                        
         this.#then(index);
-        
-         
-        console.log(this.lengthQueue);
     }
+    
 
     #then(result) {
         console.log(`Успешно завершен промис ${result}`)
         this.countSizeConcurrency--;
         console.log(this.countSizeConcurrency);
-                
-        if (this.lengthQueue.length===0) {
-            console.log('очередь опустошена')
+        if (this.countSizeConcurrency===0) {
+                console.log('очередь опустошена');
+                return;
         }
-        
+        this.#execute();
+    
     }
 }
 
@@ -63,7 +67,7 @@ const queue = new Queue();
     
 for (let i = 1; i <= 100; i++){
     queue.add(payload, i);
-    // queue.then(i)    
+      
 }
 
 // if (this.lengthQueue.length > 0) {
@@ -89,17 +93,6 @@ for (let i = 1; i <= 100; i++){
 //         // console.log(this.queuesize);
 //         // console.log(this.lengthQueue);
 //     }
-
-
-   
-
-
-// callingThePayload() {
-//         if (this.promises.length === 0) {
-//             return;
-//         }
-//         this.#execute();
-// }
 
 // let promises = [];
 
